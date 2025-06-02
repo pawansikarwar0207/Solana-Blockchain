@@ -1,25 +1,25 @@
 <div class="container mt-3 mb-3">
 	<h3>Select Verification Products</h3>
 
-	<%= form_with url: orders_path do %>
-	<table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Select</th>
-        <th>Name</th>
-        <th>Price (USD)</th>
-      </tr>
-    </thead>
-    <tbody>
-		  <% @products.each do |p| %>
-		    <tr>
-		      <td><%= check_box_tag "product_ids[]", p.id %></td>
-			    <td><%= p.name %></td>
-			    <td>$<%= p.price %></td>
-		  <% end %>
-  	</tbody>
-  </table>
-	  <%= submit_tag "Continue", class: 'btn btn-primary mt-2' %>
+	<%= form_with url: orders_path, html: { id: "product-selection-form" } do %>
+		<table class="table table-bordered">
+	    <thead>
+	      <tr>
+	        <th>Select</th>
+	        <th>Name</th>
+	        <th>Price (USD)</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+			  <% @products.each do |p| %>
+			    <tr>
+			      <td><%= check_box_tag "product_ids[]", p.id, false, class: "product-checkbox" %></td>
+				    <td><%= p.name %></td>
+				    <td>$<%= p.price %></td>
+			  <% end %>
+	  	</tbody>
+	  </table>
+	  <%= submit_tag "Continue", class: 'btn btn-primary mt-2', disabled: true, id: "submit-button" %>
 	<% end %>
 	
 	<% if @products %>
@@ -37,3 +37,22 @@
 		</div>
 	<% end %>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const checkboxes = document.querySelectorAll(".product-checkbox");
+    const submitBtn = document.getElementById("submit-button");
+
+    function toggleSubmitButton() {
+      const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+      submitBtn.disabled = !isAnyChecked;
+    }
+
+    checkboxes.forEach(cb => {
+      cb.addEventListener("change", toggleSubmitButton);
+    });
+
+    // Initial check in case of pre-filled form
+    toggleSubmitButton();
+  });
+</script>

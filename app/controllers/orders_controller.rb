@@ -1,9 +1,9 @@
 class OrdersController < ApplicationController
-  before_action :set_client_org
+  before_action :set_user
   before_action :set_order, only: [:show, :confirm_crypto_payment]
 
   def index
-    @orders = @client_org.orders.includes(:payment)
+    @orders = @user.orders.includes(:payment)
   end
 
   def new
@@ -11,13 +11,13 @@ class OrdersController < ApplicationController
   end
 
   def create
-    @client_org = current_user
+    @user = current_user
 
-    unless @client_org&.persisted?
+    unless @user&.persisted?
       raise "No client organization present!"
     end
 
-    order = @client_org.orders.create!(order_params)
+    order = @user.orders.create!(order_params)
     # order.update(payment_memo: "ORDER-#{order.id}")
     order.update!(payment_memo: SecureRandom.hex(6)) unless order.payment_memo.present?
 
@@ -37,12 +37,16 @@ class OrdersController < ApplicationController
     end
   end
 
+  def my_orders
+  	@my_orders = current_user.orders.order(created_at: :desc)
+  end
+
   def upload_providers
-    @order = @client_org.orders.find(params[:id])
+    @order = @user.orders.find(params[:id])
   end
 
   def submit_providers
-    @order = @client_org.orders.find(params[:id])
+    @order = @user.orders.find(params[:id])
     if params[:csv_file].present?
       CsvUploadService.new(@order, params[:csv_file]).call
     else
@@ -52,7 +56,7 @@ class OrdersController < ApplicationController
   end
 
   def checkout
-    @order = @client_org.orders.find(params[:id])
+    @order = @user.orders.find(params[:id])
     @order.calculate_total!
 
     total_cents = (@order.total_amount * 100).to_i
@@ -81,7 +85,7 @@ class OrdersController < ApplicationController
 
 
   def payment_success
-    @order = @client_org.orders.find(params[:id])
+    @order = @user.orders.find(params[:id])
     @order.reload
 
     respond_to do |format|
@@ -100,7 +104,7 @@ class OrdersController < ApplicationController
 
 
   def cancel_order
-    @order = @client_org.orders.find(params[:id])
+    @order = @user.orders.find(params[:id])
     redirect_to @order, alert: 'Payment was canceled.'
   end
 
@@ -131,12 +135,12 @@ class OrdersController < ApplicationController
 
   private
 
-  def set_client_org
-    @client_org = current_user
+  def set_user
+    @user = current_user
   end
 
   def set_order
-    @order = @client_org.orders.find_by(id: params[:id])
+    @order = @user.orders.find_by(id: params[:id])
   end
 
   def order_params

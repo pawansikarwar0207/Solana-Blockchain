@@ -7,6 +7,8 @@ Rails.application.routes.draw do
 
   post "/users/update_wallet", to: "users#update_wallet"
 
+  get "/my_orders/orders", to: 'orders#my_orders', as: :my_orders_orders
+
   resources :orders do
     member do
       get :upload_providers

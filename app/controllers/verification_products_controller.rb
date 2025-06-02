@@ -10,9 +10,9 @@ class VerificationProductsController < ApplicationController
   def create
     @verification_product = VerificationProduct.new(verification_product_params)
     if @verification_product.save
-      redirect_to verification_products_path
+      redirect_to verification_products_path notice: 'Product has been saved.'
     else
-      render :new
+      render :new, status: :unprocessable_entity
     end
   end
 

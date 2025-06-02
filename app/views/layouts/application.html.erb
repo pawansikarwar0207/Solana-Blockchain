@@ -12,6 +12,21 @@
 
   <body>
     <%= render 'layouts/header' %>
+
+    <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+      <% flash.each do |type, message| %>
+        <div class="toast show text-white bg-<%= bootstrap_class_for(type) %>" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header bg-<%= bootstrap_class_for(type) %> text-white">
+            <strong class="me-auto"><%= type.capitalize %></strong>
+            <button type="button" class="btn-close btn-close-white ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+          <div class="toast-body">
+            <%= message %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
     <%= yield %>
   </body>
 </html>

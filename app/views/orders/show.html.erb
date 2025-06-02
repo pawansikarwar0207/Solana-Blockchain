@@ -22,34 +22,45 @@
           <% if @order.payment&.solana_signature %>
             <p><strong>Tx:</strong> <code><%= @order.payment.solana_signature %></code></p>
           <% end %>
+
+          <%= link_to 'Pay', checkout_order_url(@order), target: "_blank", class: "btn btn-primary btn-sm" %>
+
         </div>
       </div>
     </div>
   </div>
 
   <!-- Providers -->
-  <h3 class="mb-3">Providers</h3>
-  <div class="row">
-    <% @order.provider_profiles.each do |provider| %>
-      <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow">
-          <div class="card-body">
-            <h5 class="card-title mb-1"><%= provider.first_name %> <%= provider.last_name %></h5>
-            <p class="text-muted mb-0">NPI: <strong><%= provider.npi_number %></strong></p>
+  <% if @order.provider_profiles.present? %>
+    <h3 class="mb-3">Providers</h3>
+    <div class="row">
+      <% @order.provider_profiles.each do |provider| %>
+        <div class="col-md-4 mb-4">
+          <div class="card h-100 shadow">
+            <div class="card-body">
+              <h5 class="card-title mb-1"><%= provider.first_name %> <%= provider.last_name %></h5>
+              <p class="text-muted mb-0">NPI: <strong><%= provider.npi_number %></strong></p>
+            </div>
           </div>
         </div>
-      </div>
-    <% end %>
-  </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-warning mt-4">
+      <h5>No providers added for this order.</h5>
+      <%= link_to 'Upload Providers', upload_providers_order_path(@order), class: 'btn btn-primary btn-sm mt-2' %>
+    </div>
+  <% end %>
+
 
   <!-- Order Items -->
   <h3 class="mt-5 mb-3">Order Items</h3>
   <div class="table-responsive">
-    <table class="table table-hover table-striped align-middle table-border">
+    <table class="table table-hover table-striped align-middle table-bordered">
       <thead>
         <tr>
-          <th class="text-white">Product</th>
-          <th class="text-white">Price</th>
+          <th>Product</th>
+          <th>Price</th>
         </tr>
       </thead>
       <tbody>
