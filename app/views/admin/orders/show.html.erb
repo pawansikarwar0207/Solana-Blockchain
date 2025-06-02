@@ -92,23 +92,25 @@
 
 
   <!-- Order Items Section -->
-  <h3 class="mt-5 mb-3">Order Items</h3>
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped align-middle shadow-sm">
-      <thead>
-        <tr>
-          <th>Product</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @order.order_items.each do |item| %>
+  <% if @order.order_items.present? %>
+    <h3 class="mt-5 mb-3">Order Items</h3>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped align-middle shadow-sm">
+        <thead>
           <tr>
-            <td><%= item.verification_product.name %></td>
-            <td>$<%= item.verification_product.price %></td>
+            <th>Product</th>
+            <th>Price</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          <% @order.order_items.each do |item| %>
+            <tr>
+              <td><%= item.verification_product.name %></td>
+              <td>$<%= item.verification_product.price %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </div>
