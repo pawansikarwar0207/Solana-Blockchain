@@ -1,4 +1,4 @@
-<div class="container mt-5">
+<div class="container mt-3">
 	<%#= link_to "Add New Verification Types", new_admin_verification_product_path, class: "btn btn-success btn-sm mb-2" %>
 	<% if @orders.present? %>
 		<h3>Incoming Orders</h3>
@@ -35,4 +35,6 @@
 	<% else %>
 		<p class="fs-4 fw-bold bg-warning py-2 text-center ">No orders found.</p>
 	<% end %>
+
+	<%= paginate @orders %>
 </div>

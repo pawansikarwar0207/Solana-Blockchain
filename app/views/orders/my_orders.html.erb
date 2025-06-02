@@ -1,6 +1,14 @@
-<div class="container mt-5">
+<div class="container mt-3">
 	<% if @my_orders.present? %>
 		<h3>My Product</h3>
+		<%= form_with url: my_orders_orders_path, method: :get, local: true, class: "row mb-3" do %>
+		  <div class="col-md-4">
+		    <%= select_tag :status,
+		      options_for_select([['All', ''], ['Paid', 'paid'], ['Pending', 'pending']], selected: params[:status]),
+		      class: "form-select",
+		      onchange: "this.form.submit();" %>
+		  </div>
+		<% end %>
 		<table class="table table-bordered table-striped">
 		  <thead>
 		    <tr>
@@ -15,7 +23,7 @@
 		    <% @my_orders.each do |order| %>
 		      <tr>
 		        <td><%= order.id %></td>
-		        <td><%= order.provider_profiles.count %></td>
+		        <td><%= order.provider_profiles.size %></td>
 		        <td>$<%= order.total_amount %></td>
 		        <td>
 		          <span class="badge <%= order.status == 'paid' ? 'bg-success' : 'bg-secondary' %>">
@@ -24,6 +32,7 @@
 		        </td>
 		        <td>
 		          <%= link_to "View", order_path(order), class: "btn btn-primary btn-sm" %>
+		          <%#= link_to 'Delete', order_path(order), method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger btn-sm" %>
 
 		          <%# if order.status == 'pending' %>
 		          	<%#= link_to 'Pay', checkout_order_url(order), target: "_blank", class: "btn btn-success btn-sm" %>
@@ -36,4 +45,6 @@
 	<% else %>
 		<p class="fs-4 fw-bold bg-warning py-2 text-center ">No orders found.</p>
 	<% end %>
+
+	<%= paginate @my_orders %>
 </div>

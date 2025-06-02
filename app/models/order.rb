@@ -1,6 +1,8 @@
 class Order < ApplicationRecord
 	before_create :generate_payment_memo
 
+	paginates_per 10
+
   belongs_to :user
   has_many :provider_profiles, dependent: :destroy
   has_many :order_items, dependent: :destroy

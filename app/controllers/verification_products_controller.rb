@@ -1,6 +1,6 @@
 class VerificationProductsController < ApplicationController
   def index
-    @verification_products = VerificationProduct.order(created_at: :desc).paginate(per_page: 10, page: params[:page] || 1)
+    @verification_products = VerificationProduct.order(created_at: :desc).page(params[:page]).per(10)
   end
 
   def new

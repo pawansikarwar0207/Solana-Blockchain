@@ -1,7 +1,7 @@
 <div class="container mt-3">
 	<h3>Select Verification Types</h3>
 	
-	<%= form_with url: new_order_path, method: :get, local: true do %>
+	<%= form_with url: new_order_path, method: :get, local: true, html: { onsubmit: "return validateProductTypes();" } do %>
 	  <table class="table table-bordered">
 	    <thead>
 	      <tr>
@@ -27,18 +27,16 @@
 	  <%= submit_tag "Continue", class: 'btn btn-primary mt-2 btn-sm' %>
 	<% end %>
 
-	<% if @verification_products %>
-		<div class="col-lg-12 mt-3 mb-3">
-			<div class="d-flex justify-content-between bg-medium-grey rounded align-items-center py-3">
-				<div class="page_info ms-3 text-black">
-					<%= page_entries_info @verification_products %>
-				</div>
-				<% if params[:per_page ].present? %>
-					<%= will_paginate @verification_products, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-				<% else %>
-					<%= will_paginate @verification_products, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-				<% end %>
-			</div>
-		</div>
-	<% end %>
+	<%= paginate @verification_products %>
 </div>
+
+<script>
+  function validateProductTypes() {
+    const checkboxes = document.querySelectorAll('input[name="product_ids[]"]:checked');
+    if (checkboxes.length === 0) {
+      alert("Please select at least one product type.");
+      return false;
+    }
+    return true;
+  }
+</script>

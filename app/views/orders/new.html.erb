@@ -1,7 +1,7 @@
 <div class="container mt-3 mb-3">
 	<h3>Select Verification Products</h3>
 
-	<%= form_with url: orders_path do %>
+	<%= form_with url: orders_path, html: { onsubmit: "return validateProductSelection();" } do %>
 		<table class="table table-bordered">
 	    <thead>
 	      <tr>
@@ -19,21 +19,19 @@
 			  <% end %>
 	  	</tbody>
 	  </table>
-	  <%= submit_tag "Continue", class: 'btn btn-primary mt-2' %>
+	  <%= submit_tag "Continue", class: 'btn btn-primary mt-2 btn-sm' %>
 	<% end %>
 	
-	<% if @products %>
-		<div class="col-lg-12 mt-3 mb-3">
-			<div class="d-flex justify-content-between bg-light rounded align-items-center py-3">
-				<div class="page_info ms-3 text-black">
-					<%= page_entries_info @products %>
-				</div>
-				<% if params[:per_page ].present? %>
-					<%= will_paginate @products, :params =>  {per_page: @per_page }, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-				<% else %>
-					<%= will_paginate @products, renderer: WillPaginate::ActionView::BootstrapLinkRenderer %>
-				<% end %>
-			</div>
-		</div>
-	<% end %>
+	<%= paginate @products %>
 </div>
+
+<script>
+  function validateProductSelection() {
+    const checkboxes = document.querySelectorAll('input[name="product_ids[]"]:checked');
+    if (checkboxes.length === 0) {
+      alert("Please select at least one product.");
+      return false;
+    }
+    return true;
+  }
+</script>

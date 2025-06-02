@@ -1,4 +1,7 @@
 class VerificationProduct < ApplicationRecord
+
+	paginates_per 10
+	
   has_many :order_items
   has_many :verification_tasks
 

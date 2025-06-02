@@ -7,7 +7,7 @@ class OrdersController < ApplicationController
   end
 
   def new
-    @products = VerificationProduct.order(created_at: :desc).paginate(per_page: 10, page: params[:page] || 1)
+    @products = VerificationProduct.order(created_at: :desc).page(params[:page]).per(10)
   end
 
   def create
@@ -21,9 +21,9 @@ class OrdersController < ApplicationController
     # order.update(payment_memo: "ORDER-#{order.id}")
     order.update!(payment_memo: SecureRandom.hex(6)) unless order.payment_memo.present?
 
-    params[:product_ids].each do |pid|
-      order.order_items.create!(verification_product_id: pid)
-    end
+    Array(params[:product_ids]).each do |pid|
+	    order.order_items.create!(verification_product_id: pid)
+	  end
 
     order.calculate_total!
 
@@ -38,22 +38,31 @@ class OrdersController < ApplicationController
   end
 
   def my_orders
-  	@my_orders = current_user.orders.order(created_at: :desc)
-  end
+	  @status_filter = params[:status]
+	  orders = current_user.orders.includes(:provider_profiles).order(created_at: :desc)
+	  orders = orders.where(status: @status_filter) if @status_filter.present?
+	  @my_orders = orders.page(params[:page]).per(10)
+	end
+
 
   def upload_providers
     @order = @user.orders.find(params[:id])
   end
 
   def submit_providers
-    @order = @user.orders.find(params[:id])
-    if params[:csv_file].present?
-      CsvUploadService.new(@order, params[:csv_file]).call
-    else
-      @order.provider_profiles.create!(provider_params)
-    end
-    redirect_to checkout_order_path(@order)
-  end
+	  @order = @user.orders.find(params[:id])
+
+	  if params[:csv_file].present?
+	    CsvUploadService.new(@order, params[:csv_file]).call
+	  elsif provider_params.values.all?(&:blank?)
+	    flash[:alert] = "Please fill out provider details or upload a CSV."
+	    redirect_to upload_providers_order_path(@order) and return
+	  else
+	    @order.provider_profiles.create!(provider_params)
+	  end
+
+	  redirect_to checkout_order_path(@order)
+	end
 
   def checkout
     @order = @user.orders.find(params[:id])
